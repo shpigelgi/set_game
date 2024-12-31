@@ -36,7 +36,7 @@ public class Main {
      * @param args - unused.
      */
     public static void main(String[] args) {
-        for (int l=0; l<100; l++) {
+        for (int l=0; l<1; l++) {
             mainThread = Thread.currentThread();
 
             // create the game environment objects
