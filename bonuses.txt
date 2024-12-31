@@ -1,0 +1,98 @@
+BONUS CHALLENGE FORM
+--------------------
+
+For each bonus challenge you have implemented, please replace the sentence "We are not entitled to this bonus."
+with a short description of:
+
+1. How it was implemented in your code
+2. Where it was used (in which class methods).
+3. How you tested that it is working correctly.
+
+--------------------
+
+1. Fully supporting all configuration fields and avoiding the use of magic numbers
+
+Answers:
+
+1.  each time, instead of writing the default value of a field, we wrote env.config.* (ex. instead of writing 3 as the
+    default set size, we wrote env.config.featureSize)
+2.  Dealer::Dealer()
+    Dealer::run()
+    Dealer::timerLoop()
+    Dealer::verifyAndUpdateTime()
+    Dealer::shouldFinish()
+    Dealer::placeCardsOnTable()
+    Dealer::sleepUntilWokenOrTimeout()
+    Dealer::updateTimerDisplay()
+    Dealer::timerCountdown()
+    Dealer::removeAllCardsFromTable()
+    Dealer::send()
+    Dealer::thereAreSetsOnTable()
+    Player::Player()
+    Player::run()
+    Player::createArtificialIntelligence()
+    Player::keyPressed()
+    Player::Point()
+    Player::Penalty()
+    Table::Table()
+    Table::placeCard()
+    Table::removeCard()
+3.  we ran many simulations with many different configuration fields
+    (every few times we changed one or more configuration fields and ran
+    the program while checking for bugs and/or errors)
+
+
+--------------------
+
+2. Terminating all threads (that you created) gracefully and in reverse order to the order they were created in.
+
+We are not entitled to this bonus.
+
+--------------------
+
+3. Handling the config.turnTimeoutMillis value as follows:
+config.turnTimeoutMillis < 0: display nothing.
+config.turnTimeoutMillis = 0: display a timer since the last action (reshuffle or set collected).
+Note: in modes without a countdown timer the dealer must ensure there is always at least one legal set on the table.
+
+1.  when we create the timer, we check to see which mode we are in and act accordingly.
+    if config.turnTimeoutMillis < 0 we do nothing.
+    if config.turnTimeoutMillis = 0 when we update the timer we do it through the setElapsed function and always
+    increment the timer upwards.
+    if config.turnTimeoutMillis > 0 when we update the timer we do it through the setCountdown function with the
+    additional check to wee if we need to warn or not.
+2.  Dealer::verifyAndUpdateTime()
+    Dealer::updateTimerDisplay()
+    functions that are called from updateTimerDisplay to implement this:
+        Dealer::timerCountdown()
+        Dealer::timerElapsed()
+3.  we ran many simulations in each of the modes with many variations to the different config fields.
+
+--------------------
+
+4. Making sure that the threads do not wake up unless some actual job needs to be done (e.g., a value needs to be
+changed on the display, key input needs to be handled, etc.) and the only threads created by you are:
+1 thread per player + 1 additional thread for non-human players.
+
+1.  In dealer:
+        we call sleepUntilWokenOrTimeout in each iteration of timerLoop and wake him up iff the timer needs to be
+        updated or a player has sent him a check.
+    In player:
+        we send them to sleep as soon as they sent a check. they wake up iff the dealer has checked or rejected their
+        check and returned an answer about if it is a point or a penalty.
+    The timer:
+        to create the timer without the use of an additional thread, we woke up the dealer every time the clock needed
+        to be updated and called the updateTimer function to handle that. we also made sure that we updated the timer
+        every short period of time using the verifyAndUpdateTime method in the case that the player don't stop sending
+        checks and the dealer doesn't go to sleep.
+2.  Timer:
+        Dealer::sleepUntilWokenOrTimeout()
+        Dealer::updateTimerDisplay()
+        Dealer::verifyAndUpdateTime()
+    Sleep:
+        Dealer::sleepUntilWokenOrTimeout()
+        Player::run()
+        Player::createArtificialIntelligence()
+        Player::keyPressed()
+3.  We added console prints to verify that all threads were waiting when not doing anything (and not stuck in a busy
+    wait / infinite loop)
