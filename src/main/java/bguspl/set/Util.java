@@ -8,14 +8,6 @@ import java.util.List;
 public interface Util {
 
     /**
-     * Converts a card id to an array of features (of config.featureCount values between 0 and config.featuresSize - 1)
-     *
-     * @param card - the card id.
-     * @return - the array of features.
-     */
-    int[] cardToFeatures(int card);
-
-    /**
      * Converts an array of card ids to an array of features (see cardToFeatures method).
      *
      * @param cards - an array of card ids.

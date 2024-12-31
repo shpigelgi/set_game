@@ -179,10 +179,6 @@ class TableTest {
     };
 
     static class MockUtil implements Util {
-        @Override
-        public int[] cardToFeatures(int card) {
-            return new int[0];
-        }
 
         @Override
         public int[][] cardsToFeatures(int[] cards) {

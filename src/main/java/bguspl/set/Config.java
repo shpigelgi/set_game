@@ -118,12 +118,12 @@ public class Config {
     public final int cellHeight;
 
     /**
-     * The Width (in pixeks) of player name cell
+     * The Width (in pixels) of player name cell
      */
     public final int playerCellWidth;
 
     /**
-     * The Height (in pixeks) of player name cell
+     * The Height (in pixels) of player name cell
      */
     public final int playerCellHeight;
 
@@ -231,7 +231,7 @@ public class Config {
             String defaultCodes = "";
             if (i < 2) defaultCodes = playerKeysDefaults[i];
             String playerKeysString = properties.getProperty("PlayerKeys" + (i + 1), defaultCodes);
-            if (playerKeysString.length() > 0) {
+            if (!playerKeysString.isEmpty()) {
                 String[] codes = playerKeysString.split(",");
                 if (codes.length != tableSize)
                     logger.severe("warning: player " + (i + 1) + " keys (" + codes.length + ") mismatch table size (" + tableSize + ").");

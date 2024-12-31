@@ -25,13 +25,6 @@ public class UtilImpl implements Util {
     }
 
     @Override
-    public int[] cardToFeatures(int card) {
-        int[] features = new int[config.featureCount];
-        cardToFeatures(card, features);
-        return features;
-    }
-
-    @Override
     public int[][] cardsToFeatures(int[] cards) {
         int[][] features = new int[cards.length][config.featureCount];
         IntStream.range(0, cards.length).forEach(i -> cardToFeatures(cards[i], features[i]));

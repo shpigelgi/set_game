@@ -47,7 +47,7 @@ public class Table {
         this.cardToSlot = cardToSlot;
         slots = new Slot[slotToCard.length];
         for (int i = 0; i < slotToCard.length; i++) {
-            slots[i] = new Slot(i);
+            slots[i] = new Slot();
             if (slotToCard[i] != null) {
                 slots[i].setCardId(slotToCard[i]);
             }

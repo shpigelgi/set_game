@@ -34,8 +34,8 @@ public class Dealer implements Runnable {
     /**
      * The list of sets the dealer needs to check.
      */
-    private volatile List<Check> checks;
-    private volatile List<Player> playersWaitingToBeChecked;
+    private final List<Check> checks;
+    private final List<Player> playersWaitingToBeChecked;
 
     /**
      * True iff game should be terminated due to an external event.
@@ -45,13 +45,13 @@ public class Dealer implements Runnable {
     /**
      * locks for termination
      */
-    private Object endLock = new Object();
-    private Object startLock = new Object();
+    private final Object endLock = new Object();
+    private final Object startLock = new Object();
 
     /**
      * The time when the dealer needs to reshuffle the deck due to turn timeout.
      */
-    private long reshuffleTime;
+    private final long reshuffleTime;
 
     /**
      * stops all threads before removing or placing cards on the table
@@ -171,7 +171,7 @@ public class Dealer implements Runnable {
     private void timerLoop() {
         while (!terminate && (time > 0 || env.config.turnTimeoutMillis <= 0)) {
             //if there is no timer nor sets on the table break out of the loop
-            if (env.config.turnTimeoutMillis <= 0 && !thereAreSetsOnTable()) {
+            if (env.config.turnTimeoutMillis <= 0 && thereAreNoSetsOnTable()) {
                 break;
             }
 
@@ -181,7 +181,7 @@ public class Dealer implements Runnable {
             while (!checks.isEmpty() && (time > 0 || env.config.turnTimeoutMillis <= 0)) {
 
                 //if there is no timer nor sets on the table break out of the loop
-                if (env.config.turnTimeoutMillis <= 0 && !thereAreSetsOnTable()) {
+                if (env.config.turnTimeoutMillis <= 0 && thereAreNoSetsOnTable()) {
                     break;
                 }
 
@@ -279,8 +279,6 @@ public class Dealer implements Runnable {
     public void terminate() {
 
         //stopping terminate if the dealer is still setting up the game
-        synchronized (startLock) {
-        }
 
         //stopping the announcement of winners until we have terminated all threads.
         //this is necessary so that the players don't modify the game state during the counting of the winners
@@ -306,7 +304,7 @@ public class Dealer implements Runnable {
      */
     private boolean shouldFinish() {
         if (env.config.featureSize != 1) {
-            return terminate || env.util.findSets(deck, 1).size() == 0;
+            return terminate || env.util.findSets(deck, 1).isEmpty();
         } else {
             return terminate || deck.isEmpty() && table.findEmptySlots().length == env.config.tableSize;
         }
@@ -327,23 +325,23 @@ public class Dealer implements Runnable {
         Player currPlayer = check.getPlayer();
 
         //for each card in the set, we remove all tokens on it and remove it from the table
-        for (int i = 0; i < cards.length; i++) {
-            Integer[] playersId = table.getSlots()[table.cardToSlot[cards[i]]].getTokens();
+        for (int card : cards) {
+            Integer[] playersId = table.getSlots()[table.cardToSlot[card]].getTokens();
 
             //remove all the tokens from this card
-            table.removeTokens(table.cardToSlot[cards[i]]);
+            table.removeTokens(table.cardToSlot[card]);
 
             //for each of the tokens we removed, we add its player thread to the wakeup list
-            for (int j = 0; j < playersId.length; j++) {
-                if (playersId[j] != null && playersId[j] != currPlayer.id) {
+            for (Integer integer : playersId) {
+                if (integer != null && integer != currPlayer.id) {
 
                     //remove the check this player has sent (if any), remove the token from its token list, and set its checked status to false
-                    removeCheck(playersId[j]);
-                    findPlayer(playersId[j]).removeToken(table.cardToSlot[cards[i]]);
+                    removeCheck(integer);
+                    findPlayer(integer).removeToken(table.cardToSlot[card]);
                 }
             }
-            synchronized (table.slots[table.cardToSlot[cards[i]]]) {
-                table.removeCard(table.cardToSlot[cards[i]]);
+            synchronized (table.slots[table.cardToSlot[card]]) {
+                table.removeCard(table.cardToSlot[card]);
             }
         }
     }
@@ -582,12 +580,12 @@ public class Dealer implements Runnable {
      * @return the player with the id
      * @pre id >= 0
      * @pre players.length > id
-     * @post @pre(players.length) == players.length
+     * @post @pre(players.length) == players. Length
      */
     public Player findPlayer(Integer id) {
-        for (int i = 0; i < players.length; i++) {
-            if (players[i].id == id) {
-                return players[i];
+        for (Player player : players) {
+            if (player.id == id) {
+                return player;
             }
         }
         return null;
@@ -614,19 +612,19 @@ public class Dealer implements Runnable {
 
     private LinkedList<Integer> arrayToList(Integer[] arr) {
         LinkedList<Integer> ans = new LinkedList<>();
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] != null) {
-                int n = arr[i];
+        for (Integer integer : arr) {
+            if (integer != null) {
+                int n = integer;
                 ans.add(n);
             }
         }
         return ans;
     }
 
-    private boolean thereAreSetsOnTable(){
-        boolean noNormalSets = env.util.findSets(arrayToList(table.slotToCard), 1).size() == 0;
+    private boolean thereAreNoSetsOnTable(){
+        boolean noNormalSets = env.util.findSets(arrayToList(table.slotToCard), 1).isEmpty();
         boolean oneFeatureSet = ((!deck.isEmpty() || table.findEmptySlots().length != env.config.tableSize) && env.config.featureSize == 1);
-        return !noNormalSets || oneFeatureSet;
+        return noNormalSets && !oneFeatureSet;
     }
 
 

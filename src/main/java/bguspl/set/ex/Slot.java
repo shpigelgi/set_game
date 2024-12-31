@@ -1,6 +1,5 @@
 package bguspl.set.ex;
 
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
@@ -9,22 +8,16 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public class Slot {
 
     /**
-     * the slot id
-     */
-    private int id;
-
-    /**
      * the tokens placed on the slot
      */
-    private volatile ConcurrentLinkedDeque<Integer> tokens;
+    private final ConcurrentLinkedDeque<Integer> tokens;
 
     /**
      * the id of the card on the slot
      */
     private int cardId;
 
-    public Slot(int _id) {
-        id = _id;
+    public Slot() {
         cardId = -1;
         tokens = new ConcurrentLinkedDeque<>();
     }
@@ -45,7 +38,7 @@ public class Slot {
      * @return true if the removal was successful, false otherwise
      */
     public boolean removeToken(int player) {
-        return tokens.remove((Integer) player);
+        return tokens.remove(player);
     }
 
     /**
@@ -59,14 +52,6 @@ public class Slot {
         return tokens.toArray(new Integer[0]);
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public int getCardId() {
         return cardId;
     }
@@ -74,4 +59,5 @@ public class Slot {
     public void setCardId(int cardId) {
         this.cardId = cardId;
     }
+
 }

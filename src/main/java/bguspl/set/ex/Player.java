@@ -52,7 +52,7 @@ public class Player implements Runnable {
     /**
      * The Dealer in the current game.
      */
-    private Dealer dealer;
+    private final Dealer dealer;
 
     /**
      * The current score of the player.
@@ -62,12 +62,12 @@ public class Player implements Runnable {
     /**
      * the tokens that this player has placed
      */
-    private volatile List<Integer> tokensPlaced;
+    private final List<Integer> tokensPlaced;
 
     /**
      * the incoming action queue for this player
      */
-    private ArrayBlockingQueue<Integer> actionQueue;
+    private final ArrayBlockingQueue<Integer> actionQueue;
 
     /**
      * boolean checks
@@ -156,7 +156,7 @@ public class Player implements Runnable {
                     }
 
                     //init the check to be sent
-                    Check check = new Check(cards, playerThread, this);
+                    Check check = new Check(cards, this);
 
                     //send the check and wait until awakened by dealer.
                     synchronized (playerThread) {
@@ -267,7 +267,7 @@ public class Player implements Runnable {
                     while (aiThread == null) {
                         try {
                             dealer.wait();
-                        } catch (InterruptedException e) {
+                        } catch (InterruptedException ignored) {
                         }
                     }
                 }
@@ -292,7 +292,7 @@ public class Player implements Runnable {
                 if (aiThread.isAlive()) {
                     try {
                         dealer.wait();
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException ignored) {
                     }
                 }
             }
@@ -385,7 +385,7 @@ public class Player implements Runnable {
         try {
             for (long i = env.config.penaltyFreezeMillis; i > 0; i = i - 1000) {
                 env.ui.setFreeze(id, i);
-                playerThread.sleep(1000);
+                Thread.sleep(1000);
             }
             env.ui.setFreeze(id, 0);
         } catch (InterruptedException ignored) {

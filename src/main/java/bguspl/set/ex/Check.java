@@ -7,30 +7,20 @@ public class Check {
     /**
      * the cards to check
      */
-    private int[] cardsToCheck;
-
-    /**
-     * the thread of the player
-     */
-    private Thread playerThread;
+    private final int[] cardsToCheck;
 
     /**
      * the player that sent the check
      */
-    private Player player;
+    private final Player player;
 
-    public Check(int[] cardsToCheck, Thread playerThread, Player player) {
+    public Check(int[] cardsToCheck, Player player) {
         this.cardsToCheck = cardsToCheck;
-        this.playerThread = playerThread;
         this.player = player;
     }
 
     public int[] getCardsToCheck() {
         return cardsToCheck;
-    }
-
-    public Thread getPlayerThread() {
-        return playerThread;
     }
 
     public Player getPlayer() {
